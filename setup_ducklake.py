@@ -1,33 +1,10 @@
-import os
-from dotenv import load_dotenv
-import boto3
-from botocore.client import Config
-
 from client import get_client
+from storage import get_s3_storage
 
-load_dotenv()
+storage = get_s3_storage()
+storage.create_bucket()
 
-MINIO_USER = os.environ["MINIO_ROOT_USER"]
-MINIO_PASS = os.environ["MINIO_ROOT_PASSWORD"]
-
-MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://localhost:9000")
-MINIO_BUCKET = os.getenv("MINIO_BUCKET", "ducklake")
-
-MINIO_BUCKET = os.getenv("MINIO_BUCKET", "ducklake")
-
-s3 = boto3.client(
-    "s3",
-    endpoint_url=MINIO_ENDPOINT,
-    aws_access_key_id=MINIO_USER,
-    aws_secret_access_key=MINIO_PASS,
-    config=Config(signature_version="s3v4"),
-)
-
-s3.create_bucket(Bucket=MINIO_BUCKET)
-
-print(f"Bucket created: {MINIO_BUCKET}")
-
-client = get_client()
+client = get_client(storage=storage)
 client.connect()
 
 

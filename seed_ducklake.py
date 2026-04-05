@@ -1,8 +1,12 @@
+
+
 from client import get_client
 
 from faker import Faker
 import pandas as pd
 import random
+
+from storage import get_s3_storage
 
 fake = Faker()
 
@@ -30,7 +34,7 @@ def generate_keywords(n=100_000):
 
 
 if __name__ == "__main__":
-    client = get_client()
+    client = get_client(storage=get_s3_storage())
     client.connect()
     seed_df = generate_keywords()
     client.register("seed_df", seed_df)

@@ -1,10 +1,10 @@
 from time import perf_counter
 
 from client import DuckLakeClient, get_client
+from storage import get_s3_storage
 
 if __name__ == "__main__":
-
-    client = get_client()
+    client = get_client(storage=get_s3_storage())
     client.connect()
 
     TABLE = "ducklake.main.keywords"
