@@ -18,6 +18,7 @@ SEO keyword analytics powered by [DuckLake](https://ducklake.select/) — an ope
 | `setup_ducklake.py` | Creates the storage bucket, attaches the DuckLake catalog, and creates the keywords table |
 | `seed_ducklake.py` | Generates and inserts 100k fake keyword rows |
 | `queries.py` | Runs demo analytical queries with timing |
+| `ui.py` | Launches the DuckDB web UI with the DuckLake catalog attached |
 | `cleanup.py` | Deletes all keyword data, drops the table, and cleans up DuckLake snapshots/files |
 
 ## Schema
@@ -98,7 +99,19 @@ uv run python seed_ducklake.py
 uv run python queries.py
 ```
 
-### 7. Cleanup (optional)
+### 7. Launch DuckDB UI (optional)
+
+Opens the built-in DuckDB web UI with the DuckLake catalog attached:
+
+```bash
+uv run python ui.py
+```
+
+The UI is available at `http://localhost:4213`. Press Enter in the terminal to stop.
+
+![DuckDB UI](.github/assets/ui-screenshot.png)
+
+### 8. Cleanup (optional)
 
 Deletes all keyword data, drops the table, and expires DuckLake snapshots:
 
