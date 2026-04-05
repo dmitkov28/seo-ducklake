@@ -1,5 +1,3 @@
-
-
 from client import get_client
 
 from faker import Faker
