@@ -102,7 +102,7 @@ def get_minio_storage() -> DuckLakeStorage:
     load_dotenv()
     MINIO_USER = os.environ["MINIO_ROOT_USER"]
     MINIO_PASS = os.environ["MINIO_ROOT_PASSWORD"]
-    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://localhost:9000")
+    MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
     MINIO_BUCKET = os.getenv("MINIO_BUCKET", "ducklake")
 
     storage = MinioStorage(
