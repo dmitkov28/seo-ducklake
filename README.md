@@ -1,13 +1,24 @@
 # seo-ducklake
 
-SEO keyword analytics powered by [DuckLake](https://ducklake.select/) — an open lakehouse format that uses DuckDB as the query engine, PostgreSQL as the metadata catalog, and MinIO for object storage.
+SEO keyword analytics powered by [DuckLake](https://ducklake.select/) — an open lakehouse format that uses DuckDB as the query engine, PostgreSQL as the metadata catalog, and S3-compatible object storage.
 
 ## Architecture
 
 - **DuckDB** — in-process analytical query engine
 - **PostgreSQL** — DuckLake metadata catalog
-- **MinIO** — S3-compatible object storage for Parquet data files
+- **Object storage** — AWS S3 or MinIO (local S3-compatible) for Parquet data files
 - **pgAdmin** — optional Postgres web UI (running on port 5050)
+
+### Project structure
+
+| File | Description |
+|---|---|
+| `storage.py` | Storage abstraction — `MinioStorage` and `S3Storage` backends behind a `DuckLakeStorage` protocol |
+| `client.py` | `DuckLakeClient` — wraps DuckDB connection, catalog attachment, and query execution |
+| `setup_ducklake.py` | Creates the storage bucket, attaches the DuckLake catalog, and creates the keywords table |
+| `seed_ducklake.py` | Generates and inserts 100k fake keyword rows |
+| `queries.py` | Runs demo analytical queries with timing |
+| `cleanup.py` | Deletes all keyword data, drops the table, and cleans up DuckLake snapshots/files |
 
 ## Schema
 
@@ -42,6 +53,13 @@ cp .env.example .env
 # fill in credentials in .env
 ```
 
+Required variables for Postgres + pgAdmin are always needed. For object storage, configure either the MinIO or AWS S3 variables depending on your backend:
+
+| Variable | Backend |
+|---|---|
+| `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `MINIO_BUCKET` | MinIO |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `AWS_REGION` | AWS S3 |
+
 ### 2. Start infrastructure
 
 ```bash
@@ -49,6 +67,8 @@ docker compose up -d
 ```
 
 This starts PostgreSQL (5432), pgAdmin (5050), and MinIO (9000/9001).
+
+> If using AWS S3 instead of MinIO, you can skip the MinIO service or remove it from `docker-compose.yml`.
 
 ### 3. Install dependencies
 
@@ -58,7 +78,7 @@ uv sync
 
 ### 4. Initialize DuckLake
 
-Creates the MinIO bucket, attaches the DuckLake catalog, and creates the keywords table:
+Creates the storage bucket, attaches the DuckLake catalog, and creates the keywords table:
 
 ```bash
 uv run python setup_ducklake.py
@@ -76,4 +96,12 @@ uv run python seed_ducklake.py
 
 ```bash
 uv run python queries.py
+```
+
+### 7. Cleanup (optional)
+
+Deletes all keyword data, drops the table, and expires DuckLake snapshots:
+
+```bash
+uv run python cleanup.py
 ```
